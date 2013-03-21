@@ -1,13 +1,15 @@
 # xelery
 
-A Clojure library designed to ... well, that part is up to you.
+XML Schema Reader
 
 ## Usage
 
-FIXME
+Reads an XSD and prduces a readable Clojure structure.
+
+Early development stage.
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013  
 
 Distributed under the Eclipse Public License, the same as Clojure.
