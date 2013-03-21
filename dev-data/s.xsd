@@ -9,10 +9,16 @@
                 <xs:element name="secondName" type="xs:string"/>
                 <xs:element name="address" type="xs:string"/>
                 <xs:element name="age" type="xs:integer"/>
-                <xs:element name="skills" type="skills"/>
+                <xs:element name="skills" type="skills" />
+                <xs:element name="languages">
+                  <xs:complexType name="skills">
+                    <xs:sequence>
+                      <xs:element maxOccurs="unbounded" minOccurs="0" name="language" type="xs:string"/>
+                    </xs:sequence>
+                  </xs:complexType>
+		</xs:element>
             </xs:sequence>
         </xs:complexType>
-
     </xs:element>
     <xs:complexType name="skills">
         <xs:sequence>

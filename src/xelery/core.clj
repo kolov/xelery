@@ -15,7 +15,7 @@
 (defn read-file[f] (with-open [r (-> (clojure.java.io/resource f) .openStream)]
                      (xml/parse r)))
 
-(defn get-schema[r]
+(defn read-schema[r]
   "Reads schema from XSD esource on the classpath"
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
       "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
@@ -25,11 +25,13 @@
     (.loadURI schemaLoader (resource-location r))))
 
 (defn components
+  "Makes a sequence of components in a schema"
   ([sc n] (let[c (.getComponents sc n)] (for[i (range (.getLength c))] (.item c i))))
     ([sc] (components sc ELEMENT_DECLARATION)))
 
 (declare read-element)
 (declare model-group-elements)
+
 (defmulti type-def (fn[_ td] (class td)))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
   [m td] (let[model-group (-> td .getParticle .getTerm)] 
@@ -37,12 +39,18 @@
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition
   [m td] (assoc m :type (.getTypeName td)))
  
+(defn- make-multiplicity [particleDecl]
+  [ (.getMinOccurs particleDecl) 
+     (if (.getMaxOccursUnbounded particleDecl)  :unbounded (.getMaxOccurs particleDecl)) ])
+
 (defn- model-group-elements[mgi]
   (let [fParticles (.getParticles mgi)
         n (.getLength fParticles)]
-    (vec (for [i (range n)] (let[particleDecl (.item fParticles i)] 
-      (read-element (.fValue particleDecl)))))))
+    (vec (for [i (range n)] 
+          (let[particleDecl (.item fParticles i)
+               fValue (.fValue particleDecl)] 
+      (-> fValue read-element (assoc :multiplicty (make-multiplicity particleDecl))))))))
 
-(defn read-element[eld]
+(defn read-element[eld ]
  (let[ m {:name (.getName eld)}]
   (type-def m (.getTypeDefinition eld))))
