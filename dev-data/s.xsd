@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://net.kolov/schema/cv"
+           targetNamespace="http://net.kolov/schema/cv">
+    <xs:element name="cv">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="firstName" type="xs:string"/>
+                <xs:element name="secondName" type="xs:string"/>
+                <xs:element name="address" type="xs:string"/>
+                <xs:element name="age" type="xs:integer"/>
+                <xs:element name="skills" type="skills"/>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+    <xs:complexType name="skills">
+        <xs:sequence>
+            <xs:element maxOccurs="4" minOccurs="0" name="skill" type="xs:string"/>
+        </xs:sequence>
+
+    </xs:complexType>
+</xs:schema>
