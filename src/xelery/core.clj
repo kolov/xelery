@@ -7,6 +7,11 @@
 (def COMPLEX_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/COMPLEX_TYPE)
 (def ELEMENT_DECLARATION
     com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
+(def ns-schema "http://www.w3.org/2001/XMLSchema")
+(def FACETS { 0 :none, 1 :length , 2 :minlength,
+4 :maxlengthH ,8 :pattern, 16 :whitespace, 32 :maxinclusive,
+64 :maxexclusive ,128 :minexclusive, 256 :mininclusive,
+512 :totaldigits 1024 :fractiondigits,2048 :enumeration})
 
 (defn resource-location[f]
   "gets the locaton of a resource on the classpath"
@@ -29,15 +34,26 @@
   ([sc n] (let[c (.getComponents sc n)] (for[i (range (.getLength c))] (.item c i))))
     ([sc] (components sc ELEMENT_DECLARATION)))
 
+
+
 (declare read-element)
 (declare model-group-elements)
+
+(defn- make-facets [fl]
+  "make vfacets map from XSObjectList containing facets"
+  (apply array-map (flatten
+  (for[i (range (.getLength fl))]
+     (let[ f (.item fl i)] [ (-> f .getFacetKind FACETS) (.getLexicalFacetValue f)])))))
 
 (defmulti type-def (fn[_ td] (class td)))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
   [m td] (let[model-group (-> td .getParticle .getTerm)] 
      (assoc m :elements (model-group-elements model-group ))))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition
-  [m td] (assoc m :type (.getTypeName td)))
+  [m td] (let [isBase  (= ns-schema (.getNamespace td))]
+         (if isBase (assoc m :type (.getTypeName td))
+                        (assoc m :type (-> td .getBaseType .getTypeName ) 
+                                 :facets (-> td .getFacets make-facets )))))
  
 (defn- make-multiplicity [particleDecl]
   [ (.getMinOccurs particleDecl) 
@@ -54,3 +70,7 @@
 (defn read-element[eld ]
  (let[ m {:name (.getName eld)}]
   (type-def m (.getTypeDefinition eld))))
+
+(defn schema-element[schema-file]
+  "Returns element definition of the roor element of the schema file"
+  (-> schema-file read-schema components first read-element))
