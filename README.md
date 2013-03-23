@@ -1,6 +1,6 @@
 # xelery
 
-XML Schema Reader
+Clojure XML Schema Reader
 
 Reads an XSD and produces a readable Clojure structure.
 
@@ -30,7 +30,7 @@ For example, this schema:
                       <xs:element maxOccurs="unbounded" minOccurs="0" name="language" type="xs:string"/>
                     </xs:sequence>
                   </xs:complexType>
-  	     </xs:element>
+  	             </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
