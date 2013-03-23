@@ -2,9 +2,7 @@
 
 XML Schema Reader
 
-## Usage
-
-Reads an XSD and prduces a readable Clojure structure.
+Reads an XSD and produces a readable Clojure structure.
 
 For example, this schema:
 
