@@ -25,7 +25,7 @@ For example, this schema:
                 </xs:element>
                 <xs:element name="skills" type="skills" />
                 <xs:element name="languages">
-                  <xs:complexType name="skills">
+                  <xs:complexType>
                     <xs:sequence>
                       <xs:element maxOccurs="unbounded" minOccurs="0" name="language" type="xs:string"/>
                     </xs:sequence>
