@@ -1,4 +1,4 @@
-(defproject com.akolov/xelery "0.1.0"
+(defproject com.akolov/xelery "0.2.0i-SNAPSHOT"
   :description "XML Schema Reader"
   :url "https://github.com/kolov/xelery"
   :license {:name "Eclipse Public License"

@@ -3,5 +3,5 @@
         xelery.core))
 
 (deftest a-test
-  (testing "FIXME, I fail."
+  (testing "schema s.xsd"
     (is (= 0 1))))

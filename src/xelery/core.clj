@@ -40,7 +40,7 @@
 (declare model-group-elements)
 
 (defn- make-facets [fl]
-  "make vfacets map from XSObjectList containing facets"
+  "make facets map from XSObjectList containing facets"
   (apply array-map (flatten
   (for[i (range (.getLength fl))]
      (let[ f (.item fl i)] [ (-> f .getFacetKind FACETS) (.getLexicalFacetValue f)])))))
