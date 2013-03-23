@@ -58,8 +58,13 @@ Is transformed to:
     
 #Usage
 
+In Leiningen, add
+
+     [com.akolov/xelery "0.1.0"]
+    
 For a schema file x.xsd on the class path, call
-    (schema-element "x.xsd")
+
+     (schema-element "x.xsd")
 
 ## License
 
