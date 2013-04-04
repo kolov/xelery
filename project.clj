@@ -1,5 +1,6 @@
-(defproject com.akolov/xelery "0.2.0i-SNAPSHOT"
+(defproject com.akolov/xelery "0.3.0-SNAPSHOT"
   :description "XML Schema Reader"
+  :min-lein-version "2.0.0"
   :url "https://github.com/kolov/xelery"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

@@ -1,6 +1,7 @@
 (ns xelery.core
   (:require [clojure.xml :as xml]
-            [clojure.zip :as zip]))
+            [clojure.zip :as zip] )
+(:use [xelery.lsinput]))
 
 ; Some constants
 (def SIMPLE_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/SIMPLE_TYPE)
@@ -13,27 +14,48 @@
 64 :maxexclusive ,128 :minexclusive, 256 :mininclusive,
 512 :totaldigits 1024 :fractiondigits,2048 :enumeration})
 
+
+(defn lsinput[ ^java.lang.String data]
+  (reify org.w3c.dom.ls.LSInput
+  (getBaseURI [this] nil)
+  (getByteStream [this]   nil)
+  (getCertifiedText [this]   false)
+  (getCharacterStream [this]   nil)
+  (getEncoding [this]   nil)
+  (getPublicId [this]   nil)
+  (getStringData [this]   data)
+  (getSystemId [this]   nil)
+  (setBaseURI [this baseURI])
+  (setByteStream[this baseURI])
+  (setCertifiedText[this baseURI])
+  (setCharacterStream[this baseURI])
+  (setEncoding[this baseURI])
+  (setPublicId[this baseURI])
+  (setStringData[this baseURI])
+  (setSystemId[this baseURI])
+   ))
+
 (defn resource-location[f]
   "gets the locaton of a resource on the classpath"
   (-> (clojure.java.io/resource f) .getFile ))
 
-(defn read-file[f] (with-open [r (-> (clojure.java.io/resource f) .openStream)]
-                     (xml/parse r)))
-
-(defn read-schema[r]
+(defn loader[]
   "Reads schema from XSD esource on the classpath"
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
       "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
-        impl (.getDOMImplementation registry "XS-Loader")
-        schemaLoader (.createXSLoader impl nil)]
-    (.loadURI schemaLoader (resource-location r))))
+        impl (.getDOMImplementation registry "XS-Loader")]
+       (.createXSLoader impl nil)))
+
+(defmulti read-schema class)
+(defmethod read-schema java.io.File [r]    (.loadURI (loader) r))
+(defmethod read-schema String [s]          (.load (loader) (lsinput s)))
+
 
 (defn components
   "Makes a sequence of components in a schema"
   ([sc n] (let[c (.getComponents sc n)] (for[i (range (.getLength c))] (.item c i))))
     ([sc] (components sc ELEMENT_DECLARATION)))
-
 
 
 (declare read-element)
@@ -67,10 +89,10 @@
                fValue (.fValue particleDecl)] 
       (-> fValue read-element (assoc :multiplicty (make-multiplicity particleDecl))))))))
 
-(defn read-element[eld ]
+(defn read-element [eld]
  (let[ m {:name (.getName eld)}]
   (type-def m (.getTypeDefinition eld))))
 
-(defn schema-element[schema-file]
-  "Returns element definition of the roor element of the schema file"
-  (-> schema-file read-schema components first read-element))
+(defn schema-element[x]
+  "Returns element definition of the root element of the schema file"
+  (-> x read-schema components first read-element))
