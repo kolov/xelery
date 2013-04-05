@@ -1,7 +1,7 @@
 (ns xelery.core
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip] )
-(:use [xelery.lsinput]))
+)
 
 ; Some constants
 (def SIMPLE_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/SIMPLE_TYPE)
