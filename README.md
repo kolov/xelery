@@ -60,11 +60,15 @@ Is transformed to:
 
 In Leiningen, add
 
-     [com.akolov/xelery "0.1.0"]
+     [com.akolov/xelery "0.3.0"]
     
-For a schema file x.xsd on the class path, call
+For a schema file:
 
-     (schema-element "x.xsd")
+     (schema-element (File. "x.xsd"))
+     
+For a string containing schema
+     (def s "<s:schema.....")
+     (schema-element s)
 
 ## License
 
