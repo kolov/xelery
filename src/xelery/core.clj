@@ -1,6 +1,7 @@
 (ns xelery.core
   (:require [clojure.xml :as xml]
-            [clojure.zip :as zip] )
+            [clojure.zip :as zip]
+            [clojure.pprint :refer [pprint]])
 )
 
 ; Some constants
