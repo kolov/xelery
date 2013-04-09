@@ -6,55 +6,91 @@ Reads an XSD and produces a readable Clojure structure.
 
 For example, this schema:
 
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns="http://net.kolov/schema/cv"
-           targetNamespace="http://net.kolov/schema/cv">
-    <xs:element name="cv">
-        <xs:complexType>
+        <?xml version="1.0" encoding="ISO-8859-1" ?>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://com.akolov/schema/cv/1.0"
+        xmlns:cv="http://com.akolov/schema/cv/1.0" elementFormDefault="qualified">
+        <xs:element name="cv">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="firstName" type="cv:nameType"/>
+                    <xs:element name="secondName" type="cv:nameType"/>
+                    <xs:element name="sex" type="cv:sexType"/>
+                    <xs:element name="freeText" type="xs:string" minOccurs="0" maxOccurs="3"/>
+                    <xs:element name="positions">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="position" type="cv:position" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:complexType name="position">
             <xs:sequence>
-                <xs:element name="firstName" type="xs:string"/>
-                <xs:element name="secondName" type="xs:string"/>
-                <xs:element name="address" type="xs:string"/>
-                <xs:element name="age">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:integer">
-                            <xs:minInclusive value="0"/>
-                            <xs:maxInclusive value="120"/>
-                        </xs:restriction>
-                    </xs:simpleType>
+                <xs:element name="startDate" type="xs:date"/>
+                <xs:element name="endDate" type="xs:date"/>
+                <xs:element name="customer" type="xs:string"/>
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="techniques">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="technique" type="xs:string" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
                 </xs:element>
-                <xs:element name="skills" type="skills" />
-                <xs:element name="languages">
-                  <xs:complexType>
-                    <xs:sequence>
-                      <xs:element maxOccurs="unbounded" minOccurs="0" name="language" type="xs:string"/>
-                    </xs:sequence>
-                  </xs:complexType>
-  	             </xs:element>
             </xs:sequence>
         </xs:complexType>
-    </xs:element>
-    <xs:complexType name="skills">
-        <xs:sequence>
-            <xs:element maxOccurs="4" minOccurs="0" name="skill" type="xs:string"/>
-        </xs:sequence>
-     </xs:complexType>
+        <xs:simpleType name="nameType" >
+            <xs:restriction base="xs:string">
+                <xs:pattern value="[a-zA-z ]{1,50}"/>
+            </xs:restriction>
+        </xs:simpleType>
+        <xs:simpleType name="sexType">
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="M"/>
+            <xs:enumeration value="F"/>
+          </xs:restriction>
+        </xs:simpleType>
     </xs:schema>
 
 Is transformed to:
 
-    {:name "cv" :elements 
-      [{:name "firstName",  :multiplicty [1 1], :type "string"} 
-       {:name "secondName", :multiplicty [1 1], :type "string"} 
-       {:name "address"     :multiplicty [1 1], :type "string"} 
-       {:name "age"         :multiplicty [1 1], :type "integer"
-          :facets {:whitespace "collapse", :fractiondigits "0", :maxinclusive "120", :mininclusive "0"}} 
-       {:name "skills",     :multiplicty [1 1], :elements 
-          [{ :name "skill", :multiplicty [0 4], :type "string"}]} 
-       {:name "languages"   :multiplicty [1 1], :elements 
-             [{:name "language", :multiplicty [0 :unbounded], :type "string" }]}
-      ] 
-    }
+    {:elements
+     [{:multiplicty [1 1],
+       :pattern "[a-zA-z ]{1,50}",
+       :facets {:whitespace "preserve"},
+       :type :string,
+       :name "firstName"}
+      {:multiplicty [1 1],
+       :pattern "[a-zA-z ]{1,50}",
+       :facets {:whitespace "preserve"},
+       :type :string,
+       :name "secondName"}
+      {:multiplicty [1 1],
+       :enum #{"F" "M"},
+       :facets {:whitespace "preserve"},
+       :type :enum,
+       :name "sex"}
+      {:multiplicty [0 3], :type :string, :name "freeText"}
+      {:multiplicty [1 1],
+       :elements
+       [{:multiplicty [1 :unbounded],
+         :elements
+         [{:multiplicty [1 1], :type :date, :name "startDate"}
+          {:multiplicty [1 1], :type :date, :name "endDate"}
+          {:multiplicty [1 1], :type :string, :name "customer"}
+          {:multiplicty [1 1], :type :string, :name "description"}
+          {:multiplicty [1 1],
+           :elements
+           [{:multiplicty [1 :unbounded],
+             :type :string,
+             :name "technique"}],
+           :name "techniques"}],
+         :name "position"}],
+       :name "positions"}],
+     :name "cv"}
     
 #Usage
 
