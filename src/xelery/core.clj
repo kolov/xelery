@@ -37,7 +37,7 @@
 
 (defn resource-location[f]
   "gets the locaton of a resource on the classpath"
-  (-> (clojure.java.io/resource f) .getFile ))
+  (if-let[loc (clojure.java.io/resource f)] (.getFile loc)))
 
 (defn loader[]
   "Reads schema from XSD esource on the classpath"
@@ -48,7 +48,7 @@
        (.createXSLoader impl nil)))
 
 (defmulti read-schema class)
-(defmethod read-schema java.io.File [r]    (.loadURI (loader) r))
+(defmethod read-schema java.io.File [f]    (.loadURI (loader) (.getPath f)))
 (defmethod read-schema String [s]          (.load (loader) (lsinput s)))
 
 
@@ -71,11 +71,19 @@
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
   [m td] (let[model-group (-> td .getParticle .getTerm)] 
      (assoc m :elements (model-group-elements model-group ))))
+
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition
   [m td] (let [isBase  (= ns-schema (.getNamespace td))]
-         (if isBase (assoc m :type (.getTypeName td))
-                        (assoc m :type (-> td .getBaseType .getTypeName ) 
-                                 :facets (-> td .getFacets make-facets )))))
+         (if isBase
+           (assoc m :type (keyword (.getTypeName td)))
+           (merge m {:type (-> td .getBaseType .getTypeName keyword)}
+             {:facets (-> td .getFacets make-facets)}
+             (if-let[pattern (.getLexicalPattern td)]
+               (let[len (.getLength pattern)](if (> len 0) {:pattern (.item pattern 0)})))
+             (if-let[enum (.getActualEnumeration td)]
+               (let[len (.getLength enum)](if (> len 0) {:enum (set (for[i (range len)] (.item enum i)))
+                                                         :type :enum})))
+              ))))
  
 (defn- make-multiplicity [particleDecl]
   [ (.getMinOccurs particleDecl) 
@@ -96,3 +104,5 @@
 (defn schema-element[x]
   "Returns element definition of the root element of the schema file"
   (-> x read-schema components first read-element))
+
+(defn parse-sample[] (clojure.pprint/pprint (schema-element (java.io.File. (resource-location "s.xsd")))))
