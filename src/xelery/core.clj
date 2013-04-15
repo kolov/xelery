@@ -62,27 +62,31 @@
 (declare read-element)
 (declare model-group-elements)
 
-(defn- make-facets [fl]
+(defn- make-all-facets [fl]
   "make facets map from XSObjectList containing facets"
   (apply array-map (flatten
   (for[i (range (.getLength fl))]
      (let[ f (.item fl i)] [ (-> f .getFacetKind FACETS) (.getLexicalFacetValue f)])))))
 
+
+(defn- make-facets [fl]
+(let [facets (make-all-facets fl)] (-> facets #(if (= (:whitespace %) "preserve") (dissoc % :whitespace) %))))
+
 (defmulti type-def (fn[_ td] (class td)))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
   [m td] (let[model-group (-> td .getParticle .getTerm)] 
-     (assoc m :elements (model-group-elements model-group ))))
+     (assoc m :type :complex :elements (model-group-elements model-group ))))
 
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition
   [m td] (let [isBase  (= ns-schema (.getNamespace td))]
          (if isBase
            (assoc m :type (keyword (.getTypeName td)))
-           (merge m {:type (-> td .getBaseType .getTypeName keyword)}
-             {:facets (-> td .getFacets make-facets)}
+           (merge m {:type (-> td .getBaseType .getTypeName keyword)  :typeName (-> td .getName)}
+             (if-let[facets (-> td .getFacets make-all-facets)] {:facets facets})
              (if-let[pattern (.getLexicalPattern td)]
                (let[len (.getLength pattern)](if (> len 0) {:pattern (.item pattern 0)})))
              (if-let[enum (.getActualEnumeration td)]
-               (let[len (.getLength enum)](if (> len 0) {:enum (set (for[i (range len)] (.item enum i)))
+               (let[len (.getLength enum)](if (> len 0) {:enumvals (set (for[i (range len)] (.item enum i)))
                                                          :type :enum})))
               ))))
  
@@ -96,7 +100,7 @@
     (vec (for [i (range n)] 
           (let[particleDecl (.item fParticles i)
                fValue (.fValue particleDecl)] 
-      (-> fValue read-element (assoc :multiplicty (make-multiplicity particleDecl))))))))
+      (-> fValue read-element (assoc :multiplicity (make-multiplicity particleDecl))))))))
 
 (defn read-element [eld]
  (let[ m {:name (.getName eld)}]
