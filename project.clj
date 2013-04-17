@@ -1,4 +1,4 @@
-(defproject com.akolov/xelery "0.3.0"
+(defproject com.akolov/xelery "0.4.1"
   :description "XML Schema Reader"
   :min-lein-version "2.0.0"
   :url "https://github.com/kolov/xelery"

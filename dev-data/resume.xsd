@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	targetNamespace="http://kransen.nl/resume" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="resume">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="title" type="xs:string" />
+				<xs:element name="last-update" type="xs:string" />
+				<xs:element name="photo" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="url" type="xs:string" />
+							<xs:element name="alt" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="personal">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string" />
+							<xs:element name="date-birth" type="xs:string" />
+							<xs:element name="gender" type="xs:string" />
+							<xs:element name="address" type="xs:string" minOccurs="0"/>
+							<xs:element name="residence" type="xs:string" />
+							<xs:element name="email" type="xs:string"/>
+							<xs:element name="telephone" type="xs:string"/>
+							<xs:element name="driving-license" type="xs:string" minOccurs="0"/>
+							<xs:element name="ict-since" type="xs:string" minOccurs="0"/>
+							<xs:element name="possible-functions" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element maxOccurs="unbounded" name="function"
+											type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="profile" type="xs:string" minOccurs="0" />
+							<xs:element name="summary" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element maxOccurs="unbounded" name="p"
+											type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="specialisms" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element maxOccurs="unbounded" name="specialism"
+											type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="educations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="education">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name" type="xs:string" />
+										<xs:element name="institution" type="xs:string" />
+										<xs:element name="date-finished" type="xs:string" />
+										<xs:element name="diploma" type="xs:string"
+											minOccurs="0" />
+										<xs:element name="reassessed" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="footnote" type="xs:unsignedByte"
+															use="required" />
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="type" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="experiences">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="experience">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="date-from" type="xs:string" />
+										<xs:element name="date-to" type="xs:string" />
+										<xs:element name="organisation" type="xs:string" />
+										<xs:element name="project" type="xs:string"
+											minOccurs="0" />
+										<xs:element name="function" type="xs:string" />
+										<xs:element name="industry" type="xs:string"
+											minOccurs="0" />
+										<xs:element name="technologies" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element maxOccurs="unbounded" name="technology"
+														type="xs:string" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="situation" type="xs:string"
+											minOccurs="0" />
+										<xs:element name="tasks" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element maxOccurs="unbounded" name="task"
+														type="xs:string" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="result" type="xs:string"
+											minOccurs="0" />
+										<xs:element name="references" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element maxOccurs="unbounded" name="reference">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="name" type="xs:string" />
+																<xs:element name="function" type="xs:string" />
+																<xs:element name="telephone" type="xs:string" />
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="skills">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="category" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name" type="xs:string" />
+										<xs:element name="skill" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="description" type="xs:string" />
+													<xs:element name="level" type="xs:string" />
+													<xs:element name="years" type="xs:integer" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="languages" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="language">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name" type="xs:string" />
+										<xs:element name="level-spoken" type="xs:string" />
+										<xs:element name="level-written" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="others" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="other" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="key" type="xs:string" />
+										<xs:element name="value" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="hobbies" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="hobby" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
