@@ -13,8 +13,6 @@
                                      :creds :gpg}
                          "snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots/"
                                       :creds :gpg}]]
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
   :scm {:url "https://github.com/kolov/xelery.git"}
   :pom-addition [:developers [:developer [:name "Assen Kolov"]
                               [:email "assen.kolov@gmail.com"]
