@@ -7,8 +7,8 @@
 ; Some constants
 (def SIMPLE_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/SIMPLE_TYPE)
 (def COMPLEX_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/COMPLEX_TYPE)
-(def ELEMENT_DECLARATION
-  com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
+(def ELEMENT_DECLARATION com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
+
 (def ns-schema "http://www.w3.org/2001/XMLSchema")
 (def FACETS {0 :none, 1 :length , 2 :minlength,
              4 :maxlengthH ,8 :pattern, 16 :whitespace, 32 :maxinclusive,
@@ -55,7 +55,7 @@
 
 (defn components
   "Makes a sequence of components in a schema"
-  ([sc n] (let [c (.getComponents sc n)] (for [i (range (.getLength c))] (.item c i))))
+  ([sc n] (if-let [c (.getComponents sc n)] (for [i (range (.getLength c))] (.item c i))))
   ([sc] (components sc ELEMENT_DECLARATION)))
 
 
