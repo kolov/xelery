@@ -4,6 +4,8 @@
             [clojure.pprint :refer [pprint]])
   )
 
+(defn log [& args] (apply println args))
+
 ; Some constants
 (def SIMPLE_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/SIMPLE_TYPE)
 (def COMPLEX_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/COMPLEX_TYPE)
@@ -45,8 +47,13 @@
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
     "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
-        impl (.getDOMImplementation registry "XS-Loader")]
-    (.createXSLoader impl nil)))
+        impl (.getDOMImplementation registry "XS-Loader")
+        result (.createXSLoader impl nil)]
+    (println (class result))
+    (.setParameter result
+      "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
+      (com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager.))
+  result))
 
 (defmulti read-schema class)
 (defmethod read-schema java.io.File [f] (.loadURI (loader) (.getPath f)))
@@ -107,6 +114,7 @@
              (-> fValue read-element (assoc :multiplicity (make-multiplicity particleDecl))))))))
 
 (defn read-element [eld]
+  (log "Reading element " eld)
   (let [m {:name (.getName eld)}]
     (type-def m (.getTypeDefinition eld))))
 

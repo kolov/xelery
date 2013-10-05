@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="http://com.akolov/schema/cv/1.0"
+   xmlns:cv="http://com.akolov/schema/cv/1.0" elementFormDefault="qualified">
+   <xs:element name="cv">
+       <xs:complexType>
+           <xs:sequence>
+               <xs:element name="firstName" type="cv:nameType"/>
+               <xs:element name="secondName" type="cv:nameType"/>
+               <xs:element name="sex" type="cv:sexType"/>
+               <xs:element name="freeText" type="xs:string" minOccurs="0" maxOccurs="3"/>
+               <xs:element name="positions">
+                   <xs:complexType>
+                       <xs:sequence>
+                           <xs:element name="position" type="cv:position" maxOccurs="unbounded"/>
+                       </xs:sequence>
+                   </xs:complexType>
+               </xs:element>
+           </xs:sequence>
+       </xs:complexType>
+   </xs:element>
+   <xs:complexType name="position">
+       <xs:sequence>
+           <xs:element name="startDate" type="xs:date"/>
+           <xs:element name="endDate" type="xs:date"/>
+           <xs:element name="customer" type="xs:string"/>
+           <xs:element name="description" type="xs:string"/>
+           <xs:element name="techniques">
+               <xs:complexType>
+                   <xs:sequence>
+                       <xs:element name="technique" type="xs:string" maxOccurs="unbounded"/>
+                   </xs:sequence>
+               </xs:complexType>
+           </xs:element>
+       </xs:sequence>
+   </xs:complexType>
+   <xs:simpleType name="nameType" >
+       <xs:restriction base="xs:string">
+           <xs:pattern value="[a-zA-z ]{1,50}"/>
+       </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="sexType">
+     <xs:restriction base="xs:string">
+       <xs:enumeration value="M"/>
+       <xs:enumeration value="F"/>
+     </xs:restriction>
+   </xs:simpleType>
+</xs:schema>
