@@ -53,6 +53,9 @@
     (.setParameter result
       "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
       (com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager.))
+  (.setParameter result
+      "http://apache.org/xml/properties/security-manager"
+      (com.sun.org.apache.xerces.internal.utils.XMLSecurityManager.))
   result))
 
 (defmulti read-schema class)
