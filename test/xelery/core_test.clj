@@ -2,6 +2,7 @@
   (:use clojure.test
         xelery.core))
 
-(deftest a-test
-  (testing "schema s.xsd"
-    (is (= 0 1))))
+(deftest parse
+  (testing "parsing sample schema"
+    (is (= '(:elements :type :name)
+             (keys (parse-resource "schema1.xsd")) ))))

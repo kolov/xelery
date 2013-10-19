@@ -20,22 +20,22 @@
 
 (defn lsinput [^java.lang.String data]
   (reify org.w3c.dom.ls.LSInput
-    (getBaseURI [this] nil)
-    (getByteStream [this] nil)
+    (getBaseURI [this] (throw (Exception. "getBaseURI")))
+    (getByteStream [this]  (throw (Exception. "getByteStream")))
     (getCertifiedText [this] false)
-    (getCharacterStream [this] nil)
-    (getEncoding [this] nil)
-    (getPublicId [this] nil)
+    (getCharacterStream [this]  (throw (Exception. "getCharacterStream")))
+    (getEncoding [this]  (throw (Exception. "getEncoding")))
+    (getPublicId [this]  (throw (Exception. "getPublicId")))
     (getStringData [this] data)
-    (getSystemId [this] nil)
-    (setBaseURI [this baseURI])
-    (setByteStream [this baseURI])
-    (setCertifiedText [this baseURI])
-    (setCharacterStream [this baseURI])
-    (setEncoding [this baseURI])
-    (setPublicId [this baseURI])
-    (setStringData [this baseURI])
-    (setSystemId [this baseURI])
+    (getSystemId [this]  (throw (Exception. "getSystemId")))
+    (setBaseURI [this v] (throw (Exception. "unexpected: setBaseURI")))
+    (setByteStream [this v] (throw (Exception. "setByteStream")))
+    (setCertifiedText [this v] (throw (Exception. "setCertifiedText")))
+    (setCharacterStream [this v]  (throw (Exception. "setCharacterStream")))
+    (setEncoding [this v]  (throw (Exception. "setEncoding")))
+    (setPublicId [this v]  (throw (Exception. "setPublicId")))
+    (setStringData [this v]  (throw (Exception. "setStringData")))
+    (setSystemId [this v]  (throw (Exception. "setSystemId")))
     ))
 
 (defn resource-location [f]
@@ -49,7 +49,7 @@
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
         impl (.getDOMImplementation registry "XS-Loader")
         result (.createXSLoader impl nil)]
-    (println (class result))
+   
     (.setParameter result
       "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
       (com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager.))
@@ -58,6 +58,8 @@
 (defmulti read-schema class)
 (defmethod read-schema java.io.File [f] (.loadURI (loader) (.getPath f)))
 (defmethod read-schema String [s] (.load (loader) (lsinput s)))
+
+           ` \
 
 
 (defn components
@@ -114,7 +116,6 @@
              (-> fValue read-element (assoc :multiplicity (make-multiplicity particleDecl))))))))
 
 (defn read-element [eld]
-  (log "Reading element " eld)
   (let [m {:name (.getName eld)}]
     (type-def m (.getTypeDefinition eld))))
 
@@ -122,4 +123,8 @@
   "Returns element definition of the root element of the schema file"
   (-> x read-schema components first read-element))
 
-(defn parse-sample [] (clojure.pprint/pprint (schema-element (java.io.File. (resource-location "resume.xsd")))))
+(defn parse-resource[r] (schema-element (java.io.File. (resource-location r))))
+(defn print-sample [] (clojure.pprint/pprint (parse-resource "schema1.xsd")))
+
+
+

@@ -4,6 +4,8 @@
 /checkouts
 pom.xml
 pom.xml.asc
+.nrepl*
+*.iml
 *.jar
 *.iml
 *.class

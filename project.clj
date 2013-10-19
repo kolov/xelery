@@ -5,8 +5,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :lein-release {:deploy-via :clojars}
-  :profiles {:dev {:resource-paths ["dev-data"]}
-             :user {:plugins [[lein-clojars "0.9.1"]]}}
+  :profiles {:dev {:resource-paths ["dev-data"]}}
   :dependencies [[org.clojure/clojure "1.4.0"]]
 
   :deploy-repositories [["releases" {:url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
