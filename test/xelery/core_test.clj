@@ -2,9 +2,13 @@
   (:use clojure.test
         xelery.core))
 
-(deftest parse-not-null
+(deftest parse-file-not-null
   (testing "Parsing returns non null result")
   (is (not= nil (parse-resource "schema1.xsd"))))
+
+(deftest parse-string-not-null
+  (testing "Parsing returns non null result")
+  (is (not= nil (schema-element (slurp (java.io.File. (resource-location "schema1.xsd")))))))
 
 (deftest parse
   (testing "parsing sample schema"

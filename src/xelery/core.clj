@@ -20,22 +20,22 @@
 
 (defn lsinput [^java.lang.String data]
   (reify org.w3c.dom.ls.LSInput
-    (getBaseURI [this] (throw (Exception. "getBaseURI")))
-    (getByteStream [this]  (throw (Exception. "getByteStream")))
+    (getBaseURI [this] (do (log "getBaseURI") nil))
+    (getByteStream [this]  (do (log "getByteStream")  nil))
     (getCertifiedText [this] false)
-    (getCharacterStream [this]  (throw (Exception. "getCharacterStream")))
-    (getEncoding [this]  (throw (Exception. "getEncoding")))
-    (getPublicId [this]  (throw (Exception. "getPublicId")))
-    (getStringData [this] data)
-    (getSystemId [this]  (throw (Exception. "getSystemId")))
-    (setBaseURI [this v] (throw (Exception. "unexpected: setBaseURI")))
-    (setByteStream [this v] (throw (Exception. "setByteStream")))
-    (setCertifiedText [this v] (throw (Exception. "setCertifiedText")))
-    (setCharacterStream [this v]  (throw (Exception. "setCharacterStream")))
-    (setEncoding [this v]  (throw (Exception. "setEncoding")))
-    (setPublicId [this v]  (throw (Exception. "setPublicId")))
-    (setStringData [this v]  (throw (Exception. "setStringData")))
-    (setSystemId [this v]  (throw (Exception. "setSystemId")))
+    (getCharacterStream [this]  (do (log "getCharacterStream") (java.io.StringReader. data) ))
+    (getEncoding [this]  (do (log "getEncoding")  nil))
+    (getPublicId [this]  (do (log "getPublicId") nil))
+    (getStringData [this] (do (log "getEncoding") nil))
+    (getSystemId [this]  (do (log "getSystemId") nil))
+    (setBaseURI [this v] (do (log "unexpected: setBaseURI") nil))
+    (setByteStream [this v] (do (log "setByteStream") nil))
+    (setCertifiedText [this v] (do (log "setCertifiedText") nil))
+    (setCharacterStream [this v]  (do (log "setCharacterStream") nil))
+    (setEncoding [this v]  (do (log "setEncoding") nil))
+    (setPublicId [this v]  (do (log "setPublicId") nil))
+    (setStringData [this v]  (do (log "setStringData") nil))
+    (setSystemId [this v]  (do (log "setSystemId") nil))
     ))
 
 (defn resource-location [f]
@@ -62,7 +62,6 @@
 (defmethod read-schema java.io.File [f] (.loadURI (loader) (.getPath f)))
 (defmethod read-schema String [s] (.load (loader) (lsinput s)))
 
-           ` \
 
 
 (defn components
@@ -124,7 +123,9 @@
 
 (defn schema-element [x]
   "Returns element definition of the root element of the schema file"
-  (-> x read-schema components first read-element))
+  (if-let[ schema (read-schema x)]
+    (-> schema components first read-element)
+    (do (log (str "Parsing " (class x) " returned nil")))))
 
 (defn parse-resource[r] (schema-element (java.io.File. (resource-location r))))
 (defn print-sample [] (clojure.pprint/pprint (parse-resource "schema1.xsd")))
