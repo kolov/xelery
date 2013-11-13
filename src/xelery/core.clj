@@ -21,21 +21,21 @@
 (defn lsinput [^java.lang.String data]
   (reify org.w3c.dom.ls.LSInput
     (getBaseURI [this] (do (log "getBaseURI") nil))
-    (getByteStream [this]  (do (log "getByteStream")  nil))
+    (getByteStream [this] (do (log "getByteStream") nil))
     (getCertifiedText [this] false)
-    (getCharacterStream [this]  (do (log "getCharacterStream") (java.io.StringReader. data) ))
-    (getEncoding [this]  (do (log "getEncoding")  nil))
-    (getPublicId [this]  (do (log "getPublicId") nil))
+    (getCharacterStream [this] (do (log "getCharacterStream") (java.io.StringReader. data)))
+    (getEncoding [this] (do (log "getEncoding") nil))
+    (getPublicId [this] (do (log "getPublicId") nil))
     (getStringData [this] (do (log "getEncoding") nil))
-    (getSystemId [this]  (do (log "getSystemId") nil))
+    (getSystemId [this] (do (log "getSystemId") nil))
     (setBaseURI [this v] (do (log "unexpected: setBaseURI") nil))
     (setByteStream [this v] (do (log "setByteStream") nil))
     (setCertifiedText [this v] (do (log "setCertifiedText") nil))
-    (setCharacterStream [this v]  (do (log "setCharacterStream") nil))
-    (setEncoding [this v]  (do (log "setEncoding") nil))
-    (setPublicId [this v]  (do (log "setPublicId") nil))
-    (setStringData [this v]  (do (log "setStringData") nil))
-    (setSystemId [this v]  (do (log "setSystemId") nil))
+    (setCharacterStream [this v] (do (log "setCharacterStream") nil))
+    (setEncoding [this v] (do (log "setEncoding") nil))
+    (setPublicId [this v] (do (log "setPublicId") nil))
+    (setStringData [this v] (do (log "setStringData") nil))
+    (setSystemId [this v] (do (log "setSystemId") nil))
     ))
 
 (defn resource-location [f]
@@ -49,14 +49,20 @@
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
         impl (.getDOMImplementation registry "XS-Loader")
         result (.createXSLoader impl nil)]
-   
-    (.setParameter result
-      "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
-      (com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager.))
-  (.setParameter result
-      "http://apache.org/xml/properties/security-manager"
-      (com.sun.org.apache.xerces.internal.utils.XMLSecurityManager.))
-  result))
+
+    (try
+      (.setParameter result
+        "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
+        (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager")))
+      (catch ClassNotFoundException e (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager not found")))
+
+    (try
+      (.setParameter result
+        "http://apache.org/xml/properties/security-manager"
+        (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityManager")))
+      (catch ClassNotFoundException e (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityManager not found")))
+
+    result))
 
 (defmulti read-schema class)
 (defmethod read-schema java.io.File [f] (.loadURI (loader) (.getPath f)))
@@ -123,11 +129,11 @@
 
 (defn schema-element [x]
   "Returns element definition of the root element of the schema file"
-  (if-let[ schema (read-schema x)]
+  (if-let [schema (read-schema x)]
     (-> schema components first read-element)
     (do (log (str "Parsing " (class x) " returned nil")))))
 
-(defn parse-resource[r] (schema-element (java.io.File. (resource-location r))))
+(defn parse-resource [r] (schema-element (java.io.File. (resource-location r))))
 (defn print-sample [] (clojure.pprint/pprint (parse-resource "schema1.xsd")))
 
 
