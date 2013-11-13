@@ -1,4 +1,4 @@
-(defproject com.akolov/xelery "0.4.4-SNAPSHOT"
+(defproject com.akolov/xelery "0.4.5-SNAPSHOT"
   :description "XML Schema Reader for Clojure"
   :min-lein-version "2.0.0"
   :url "https://github.com/kolov/xelery"
