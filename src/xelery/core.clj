@@ -1,8 +1,8 @@
 (ns xelery.core
-  (:require [clojure.xml :as xml]
-            [clojure.zip :as zip]
-            [clojure.pprint :refer [pprint]])
-  )
+  (:require
+    [clojure.pprint :refer [pprint]])
+  (:import (org.w3c.dom DOMErrorHandler DOMError)
+           (java.io File)))
 
 (defn log [& args] (apply println args))
 
@@ -11,11 +11,12 @@
 (def COMPLEX_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/COMPLEX_TYPE)
 (def ELEMENT_DECLARATION com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
 
+
 (def ns-schema "http://www.w3.org/2001/XMLSchema")
-(def FACETS {0 :none, 1 :length , 2 :minlength,
-             4 :maxlengthH ,8 :pattern, 16 :whitespace, 32 :maxinclusive,
-             64 :maxexclusive ,128 :minexclusive, 256 :mininclusive,
-             512 :totaldigits 1024 :fractiondigits,2048 :enumeration})
+(def FACETS {0   :none, 1 :length, 2 :minlength,
+             4   :maxlengthH, 8 :pattern, 16 :whitespace, 32 :maxinclusive,
+             64  :maxexclusive, 128 :minexclusive, 256 :mininclusive,
+             512 :totaldigits 1024 :fractiondigits, 2048 :enumeration})
 
 
 (defn lsinput [^java.lang.String data]
@@ -38,6 +39,12 @@
     (setSystemId [this v] (do (log "setSystemId") nil))
     ))
 
+(def schema-error-handler
+  (reify DOMErrorHandler
+    (^boolean handleError [_ ^DOMError err]
+      (throw (Exception. (.getMessage err)))))
+  )
+
 (defn resource-location [f]
   "gets the locaton of a resource on the classpath"
   (if-let [loc (clojure.java.io/resource f)] (.getFile loc)))
@@ -47,8 +54,8 @@
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
     "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
-        impl (.getDOMImplementation registry "XS-Loader")
-        result (.createXSLoader impl nil)]
+        impl     (.getDOMImplementation registry "XS-Loader")
+        result   (.createXSLoader impl nil)]
 
     (try
       (.setParameter result
@@ -60,12 +67,18 @@
       (.setParameter result
         "http://apache.org/xml/properties/security-manager"
         (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityManager")))
-      (catch ClassNotFoundException e (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityManager not found")))
+      (catch ClassNotFoundException _ (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityManager not
+       found")))
+
+    (try
+      (.setParameter result
+        com.sun.org.apache.xerces.internal.impl.Constants/DOM_ERROR_HANDLER
+        schema-error-handler))
 
     result))
 
 (defmulti read-schema class)
-(defmethod read-schema java.io.File [f] (.loadURI (loader) (.getPath f)))
+(defmethod read-schema File [f] (.loadURI (loader) (.getPath f)))
 (defmethod read-schema String [s] (.load (loader) (lsinput s)))
 
 
@@ -87,7 +100,7 @@
 
 
 (defn- make-facets [fl]
-  (let [facets (make-all-facets fl)] (-> facets #(if (= (:whitespace %) "preserve") (dissoc % :whitespace ) %))))
+  (let [facets (make-all-facets fl)] (-> facets #(if (= (:whitespace %) "preserve") (dissoc % :whitespace) %))))
 
 (defmulti type-def (fn [_ td] (class td)))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
@@ -108,7 +121,7 @@
                  (let [len (.getLength pattern)] (if (> len 0) {:pattern (.item pattern 0)})))
                (if-let [enum (.getActualEnumeration td)]
                  (let [len (.getLength enum)] (if (> len 0) {:enumvals (set (for [i (range len)] (.item enum i)))
-                                                             :type :enum})))
+                                                             :type     :enum})))
                ))))
 
 (defn- make-multiplicity [particleDecl]
@@ -117,10 +130,10 @@
 
 (defn- model-group-elements [mgi]
   (let [fParticles (.getParticles mgi)
-        n (.getLength fParticles)]
+        n          (.getLength fParticles)]
     (vec (for [i (range n)]
            (let [particleDecl (.item fParticles i)
-                 fValue (.fValue particleDecl)]
+                 fValue       (.fValue particleDecl)]
              (-> fValue read-element (assoc :multiplicity (make-multiplicity particleDecl))))))))
 
 (defn read-element [eld]
@@ -133,7 +146,7 @@
     (-> schema components first read-element)
     (do (log (str "Parsing " (class x) " returned nil")))))
 
-(defn parse-resource [r] (schema-element (java.io.File. (resource-location r))))
+(defn parse-resource [r] (schema-element (File. (resource-location r))))
 (defn print-sample [] (clojure.pprint/pprint (parse-resource "schema1.xsd")))
 
 
