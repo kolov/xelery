@@ -138,7 +138,9 @@
 
 (defn read-element [eld]
   (let [m {:name (.getName eld)}]
-    (type-def m (.getTypeDefinition eld))))
+    (if (instance?  com.sun.org.apache.xerces.internal.impl.xs.XSModelGroupImpl eld)
+      (assoc m :type :complex :elements (model-group-elements eld))
+      (type-def m (.getTypeDefinition eld)))))
 
 (defn schema-element [x]
   "Returns element definition of the root element of the schema file"
@@ -148,6 +150,4 @@
 
 (defn parse-resource [r] (schema-element (File. (resource-location r))))
 (defn print-sample [] (clojure.pprint/pprint (parse-resource "schema1.xsd")))
-
-
 
