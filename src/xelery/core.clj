@@ -12,10 +12,10 @@
 (def ELEMENT_DECLARATION com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
 
 (def ns-schema "http://www.w3.org/2001/XMLSchema")
-(def FACETS {0 :none, 1 :length , 2 :minlength,
-             4 :maxlengthH ,8 :pattern, 16 :whitespace, 32 :maxinclusive,
-             64 :maxexclusive ,128 :minexclusive, 256 :mininclusive,
-             512 :totaldigits 1024 :fractiondigits,2048 :enumeration})
+(def FACETS {0   :none, 1 :length, 2 :minlength,
+             4   :maxlengthH, 8 :pattern, 16 :whitespace, 32 :maxinclusive,
+             64  :maxexclusive, 128 :minexclusive, 256 :mininclusive,
+             512 :totaldigits 1024 :fractiondigits, 2048 :enumeration})
 
 
 (defn lsinput [^java.lang.String data]
@@ -45,21 +45,21 @@
 (defn loader []
   "Reads schema from XSD esource on the classpath"
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
-    "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
+                      "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
         impl (.getDOMImplementation registry "XS-Loader")
         result (.createXSLoader impl nil)]
 
     (try
       (.setParameter result
-        "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
-        (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager")))
+                     "http://www.oracle.com/xml/jaxp/properties/xmlSecurityPropertyManager"
+                     (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager")))
       (catch ClassNotFoundException e (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager not found")))
 
     (try
       (.setParameter result
-        "http://apache.org/xml/properties/security-manager"
-        (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityManager")))
+                     "http://apache.org/xml/properties/security-manager"
+                     (.newInstance (Class/forName "com.sun.org.apache.xerces.internal.utils.XMLSecurityManager")))
       (catch ClassNotFoundException e (println "Class com.sun.org.apache.xerces.internal.utils.XMLSecurityManager not found")))
 
     result))
@@ -87,7 +87,7 @@
 
 
 (defn- make-facets [fl]
-  (let [facets (make-all-facets fl)] (-> facets #(if (= (:whitespace %) "preserve") (dissoc % :whitespace ) %))))
+  (let [facets (make-all-facets fl)] (-> facets #(if (= (:whitespace %) "preserve") (dissoc % :whitespace) %))))
 
 (defmulti type-def (fn [_ td] (class td)))
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition
@@ -103,13 +103,13 @@
            (if isBase
              (assoc m :type (keyword (.getTypeName td)))
              (merge m {:type (-> td .getBaseType .getTypeName keyword) :typeName (-> td .getName)}
-               (if-let [facets (-> td .getFacets make-all-facets)] {:facets facets})
-               (if-let [pattern (.getLexicalPattern td)]
-                 (let [len (.getLength pattern)] (if (> len 0) {:pattern (.item pattern 0)})))
-               (if-let [enum (.getActualEnumeration td)]
-                 (let [len (.getLength enum)] (if (> len 0) {:enumvals (set (for [i (range len)] (.item enum i)))
-                                                             :type :enum})))
-               ))))
+                    (if-let [facets (-> td .getFacets make-all-facets)] {:facets facets})
+                    (if-let [pattern (.getLexicalPattern td)]
+                      (let [len (.getLength pattern)] (if (> len 0) {:pattern (.item pattern 0)})))
+                    (if-let [enum (.getActualEnumeration td)]
+                      (let [len (.getLength enum)] (if (> len 0) {:enumvals (set (for [i (range len)] (.item enum i)))
+                                                                  :type     :enum})))
+                    ))))
 
 (defn- make-multiplicity [particleDecl]
   [(.getMinOccurs particleDecl)
