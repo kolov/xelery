@@ -92,11 +92,11 @@ Is transformed to:
        :name "positions"}],
      :name "cv"}
     
-#Usage
+# Usage
 
 In Leiningen, add
 
-     [com.akolov/xelery "0.3.0"]
+     [com.akolov/xelery "0.4.5"]
     
 For a schema file:
 
