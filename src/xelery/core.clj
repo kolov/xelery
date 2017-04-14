@@ -2,7 +2,7 @@
   (:require
     [clojure.pprint :refer [pprint]])
   (:import (org.w3c.dom DOMErrorHandler DOMError)
-           (java.io File)))
+           (java.io File StringReader)))
 
 (defn log [& args] (apply println args))
 
@@ -24,7 +24,7 @@
     (getBaseURI [this] (do (log "getBaseURI") nil))
     (getByteStream [this] (do (log "getByteStream") nil))
     (getCertifiedText [this] false)
-    (getCharacterStream [this] (do (log "getCharacterStream") (java.io.StringReader. data)))
+    (getCharacterStream [this] (do (log "getCharacterStream") (StringReader. data)))
     (getEncoding [this] (do (log "getEncoding") nil))
     (getPublicId [this] (do (log "getPublicId") nil))
     (getStringData [this] (do (log "getEncoding") nil))

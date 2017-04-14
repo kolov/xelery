@@ -7,7 +7,7 @@
   :lein-release {:deploy-via :clojars}
   :profiles {:dev {:resource-paths ["dev-data"]
                    :plugins [[test2junit "1.0.1"]]}}
-  :dependencies [[org.clojure/clojure "1.5.1"]]
+  :dependencies [[org.clojure/clojure "1.8.0"]]
 
   :deploy-repositories [["releases" {:url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
                                      :creds :gpg}
