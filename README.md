@@ -1,5 +1,7 @@
 # xelery
 
+[![CircleCI](https://circleci.com/gh/kolov/xelery/tree/master.svg?style=svg)](https://circleci.com/gh/kolov/xelery/tree/master)
+
 Clojure XML Schema Reader
 
 Reads an XSD and produces a readable Clojure structure.
