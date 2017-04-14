@@ -96,7 +96,7 @@ Is transformed to:
 
 In Leiningen, add
 
-     [com.akolov/xelery "0.4.5"]
+     [com.akolov/xelery "0.4.6"]
     
 For a schema file:
 
