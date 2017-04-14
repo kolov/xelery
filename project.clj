@@ -1,4 +1,4 @@
-(defproject com.akolov/xelery "0.4.5-SNAPSHOT"
+(defproject com.akolov/xelery "0.4.6"
   :description "XML Schema Reader for Clojure"
   :min-lein-version "2.0.0"
   :url "https://github.com/kolov/xelery"
@@ -9,10 +9,6 @@
                    :plugins [[test2junit "1.0.1"]]}}
   :dependencies [[org.clojure/clojure "1.8.0"]]
 
-  :deploy-repositories [["releases" {:url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                                     :creds :gpg}
-                         "snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots/"
-                                      :creds :gpg}]]
   :scm {:url "https://github.com/kolov/xelery.git"}
   :pom-addition [:developers [:developer [:name "Assen Kolov"]
                               [:email "assen.kolov@gmail.com"]
