@@ -145,7 +145,7 @@
 (defn schema-element [x]
   "Returns element definition of the root element of the schema file"
   (if-let [schema (read-schema x)]
-    (-> schema components first read-element)
+    (some-> schema components first read-element)
     (do (log (str "Parsing " (class x) " returned nil")))))
 
 (defn parse-resource [r] (schema-element (File. (resource-location r))))
