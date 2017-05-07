@@ -2,6 +2,8 @@
   (:require
     [clojure.pprint :refer [pprint]])
   (:import (org.w3c.dom DOMErrorHandler DOMError)
+           (com.sun.org.apache.xerces.internal.dom ElementImpl CoreDocumentImpl)
+           (com.sun.org.apache.xerces.internal.util DOMUtil)
            (java.io File StringReader)))
 
 (defn log [& args] (apply println args))
@@ -10,6 +12,7 @@
 (def SIMPLE_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/SIMPLE_TYPE)
 (def COMPLEX_TYPE com.sun.org.apache.xerces.internal.xs.XSTypeDefinition/COMPLEX_TYPE)
 (def ELEMENT_DECLARATION com.sun.org.apache.xerces.internal.xs.XSConstants/ELEMENT_DECLARATION)
+(def W3C_DOM_ELEMENT com.sun.org.apache.xerces.internal.impl.xs.XSAnnotationImpl/W3C_DOM_ELEMENT)
 
 
 (def ns-schema "http://www.w3.org/2001/XMLSchema")
@@ -110,12 +113,24 @@
       (assoc m :type :complex :elements (model-group-elements model-group)))
     ))
 
+(defn get-documentation [type-definition]
+  (if-let [annotation (.item (.getAnnotations type-definition) 0)]
+      (let [elem (ElementImpl. (CoreDocumentImpl.) "annotations")]
+        (.writeAnnotation annotation elem W3C_DOM_ELEMENT)
+        {:documentation
+         (some-> elem
+                 (.getElementsByTagNameNS ns-schema "documentation")
+                 (.item 0)
+                 (DOMUtil/getChildText)
+                 (clojure.string/trim))})))
 
 (defmethod type-def com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition
   [m td] (let [isBase (= ns-schema (.getNamespace td))]
+
            (if isBase
              (assoc m :type (keyword (.getTypeName td)))
              (merge m {:type (-> td .getBaseType .getTypeName keyword) :typeName (-> td .getName)}
+               (get-documentation td)
                (if-let [facets (-> td .getFacets make-all-facets)] {:facets facets})
                (if-let [pattern (.getLexicalPattern td)]
                  (let [len (.getLength pattern)] (if (> len 0) {:pattern (.item pattern 0)})))
