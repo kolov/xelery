@@ -35,6 +35,11 @@
        </xs:sequence>
    </xs:complexType>
    <xs:simpleType name="nameType" >
+      <xs:annotation>
+           <xs:documentation>
+               A Name Type
+           </xs:documentation>
+       </xs:annotation>
        <xs:restriction base="xs:string">
            <xs:pattern value="[a-zA-z ]{1,50}"/>
        </xs:restriction>

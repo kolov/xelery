@@ -21,9 +21,9 @@
 
         { :name "cv",
          :type :complex,
-         :elements [{:name "firstName", :type :string, :typeName "nameType",
+         :elements [{:name "firstName", :type :string, :typeName "nameType", :documentation "A Name Type",
                      :facets {:whitespace "preserve"}, :pattern "[a-zA-z ]{1,50}", :multiplicity [1 1]}
-                    {:name "secondName", :type :string, :typeName "nameType",
+                    {:name "secondName", :type :string, :typeName "nameType", :documentation "A Name Type",
                      :facets {:whitespace "preserve"}, :pattern "[a-zA-z ]{1,50}", :multiplicity [1 1]}
                     {:name "sex", :type :enum, :typeName "sexType", :facets {:whitespace "preserve"}, :enumvals #{"M" "F"}, :multiplicity [1 1]}
                     {:name "freeText", :type :string, :multiplicity [0 3]}
