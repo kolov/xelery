@@ -50,7 +50,7 @@
   (if-let [loc (clojure.java.io/resource f)] (.getFile loc)))
 
 (defn loader []
-  "Reads schema from XSD esource on the classpath"
+  "Reads schema from XSD resource on the classpath"
   (System/setProperty org.w3c.dom.bootstrap.DOMImplementationRegistry/PROPERTY
     "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl")
   (let [registry (org.w3c.dom.bootstrap.DOMImplementationRegistry/newInstance)
